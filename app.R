@@ -122,7 +122,8 @@ server <- function(input, output) {
         nudge_x = 1, hjust = 0, direction = "y"
       )
 
-  })
+  },
+  res = 110)
 }
 
 
