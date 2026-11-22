@@ -15,7 +15,10 @@ ui <- fluidPage(
 
   titlePanel("Plot gene expression during C. elegans larval development"),
 
-  textInput("genes_str", "Gene(s)", value = "C26B9.7, mam-2, F45E4.5,ham-2, Y11D7A.3"),
+  textInput("genes_str",
+            label = "Gene(s)",
+            value = "dpy-6, blmp-1",
+            width = '50%'),
   plotOutput("distPlot"),
   uiOutput("error_msg")
 
@@ -26,6 +29,7 @@ ui <- fluidPage(
 server <- function(input, output) {
 
   #~ read input ----
+
   genes_str <- debounce(reactive(input$genes_str), millis = 500)
 
   genes <- reactive({
@@ -47,13 +51,25 @@ server <- function(input, output) {
   #~ error_msg ----
   output$error_msg <- renderUI({
 
-    missing <- genes()$missing
+    g <- genes()
 
-    if (length(missing) == 0) return(NULL)
+    msgs <- c(
+      if (length(g$missing) > 0)
+        paste0(
+          if (length(g$gene_names) == 0) "No gene found: " else "Genes not found: ",
+          paste(g$missing, collapse = ", ")
+        ),
+      if (length(unique(g$gene_names)) > 6)
+        paste0("More than ", 6, " genes: some are plotted without markers.")
+    )
 
-    prefix <- if (genes()$n_found == 0) "No gene found: " else "Genes not found: "
-    div(class = "alert alert-danger", paste0(prefix, paste(missing, collapse = ", ")))
+    if (length(msgs) == 0) return(NULL)
+
+    div(class = "alert alert-danger", lapply(msgs, div))
   })
+
+
+
 
   #~ plot ----
   output$distPlot <- renderPlot({
