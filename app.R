@@ -20,8 +20,8 @@ ui <- fluidPage(
             label = "Gene(s)",
             value = "dpy-6, col-46",
             width = '50%'),
-  plotOutput("distPlot"),
   uiOutput("error_msg"),
+  plotOutput("distPlot"),
   hr(),
   includeMarkdown("README.md")
 
@@ -46,8 +46,7 @@ server <- function(input, output) {
     is_found <- !is.na(all_gene_names) & (all_gene_names %in% dat_norm$gene_name)
 
     list(gene_names = all_gene_names[is_found],
-         missing = genes_typed[!is_found],
-         n_found = sum(is_found))
+         missing = genes_typed[!is_found])
 
   })
 

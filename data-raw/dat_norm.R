@@ -15,12 +15,17 @@ library(tidyverse)
 
 #~ Obtain data ----
 
+raw_file <- "data-raw/GSE130811_expr_mRNA_CE10_coding.tab.gz"
 
-# dir.create("data-raw")
-# download.file(
-#   "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE130nnn/GSE130811/suppl/GSE130811_expr_mRNA_CE10_coding.tab.gz",
-#   destfile = "data-raw/GSE130811_expr_mRNA_CE10_coding.tab.gz"
-# )
+if(!file.exists(raw_file)){
+  dir.create("data-raw")
+  download.file(
+    "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE130nnn/GSE130811/suppl/GSE130811_expr_mRNA_CE10_coding.tab.gz",
+    destfile = raw_file,
+    mode = "wb"
+  )
+}
+
 
 gids_298 <- wbData::wb_load_gene_ids(298)
 
@@ -29,10 +34,10 @@ gids_298 <- wbData::wb_load_gene_ids(298)
 #~ load ----
 
 
-dat <- read_tsv("data-raw/GSE130811_expr_mRNA_CE10_coding.tab.gz",
+dat <- read_tsv(raw_file,
+                skip = 1,
                 col_names = c("gene_id",
-                              read_lines("data-raw/GSE130811_expr_mRNA_CE10_coding.tab.gz", n_max = 1L) |> str_split_1("\\t")),
-                skip = 1) |>
+                              read_lines(raw_file, n_max = 1L) |> str_split_1("\\t"))) |>
   select(-ends_with(".2")) |>
   pivot_longer(cols = -c(1,2),
                names_to = "time",
