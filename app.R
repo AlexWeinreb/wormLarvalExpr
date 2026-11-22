@@ -18,7 +18,7 @@ ui <- fluidPage(
 
   textInput("genes_str",
             label = "Gene(s)",
-            value = "dpy-6, blmp-1",
+            value = "dpy-6, col-46",
             width = '50%'),
   plotOutput("distPlot"),
   uiOutput("error_msg"),
@@ -85,8 +85,10 @@ server <- function(input, output) {
       (\(x) 1.1 * log10(x+1) )()
 
 
-    dat_norm |>
-      filter(gene_name %in% genes_sel) |>
+    dat_filt <- dat_norm |>
+      filter(gene_name %in% genes_sel)
+
+    dat_filt |>
       ggplot(aes(x = time,
                  y = log10(1+TPM_TMM),
                  linetype = gene_name,
@@ -95,6 +97,8 @@ server <- function(input, output) {
       theme_classic() +
       theme(legend.position = "none") +
       scale_fill_brewer(palette = "Pastel2") +
+      scale_x_continuous(limits = c(NA, max(dat_filt$time) + 5),
+                         n.breaks = 6) +
       geom_rect(data = stage_df,
                 aes(xmin = start, xmax = end,
                     ymin = -Inf, ymax = max_y - .05,
@@ -118,14 +122,13 @@ server <- function(input, output) {
       geom_point(size = 3, alpha = .5) +
       geom_line() +
       ggtitle("Expression during larval development (Meeuse 2020 data)") +
-      xlab("Developmental time (h)") +
+      xlab("Developmental time (h at 25°C)") +
       ylab(expression(Expression:~log[10](1 + TPM[TMM]))) +
       ggrepel::geom_text_repel(
         aes(label = gene_name),
-        data = dat_norm |>
-          filter(gene_name %in% genes_sel) |>
-          slice_tail(n = 1, by = gene_name),
-        nudge_x = 1, hjust = 0, direction = "y"
+        data = slice_tail(dat_filt, n = 1, by = gene_name),
+        nudge_x = 1, hjust = 0, direction = "y",
+        xlim = c(max(dat_filt$time) + 1, NA)
       )
 
   },
