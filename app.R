@@ -4,6 +4,7 @@ library(dplyr)
 library(tibble)
 library(ggplot2)
 library(stringr)
+library(markdown)
 
 dat_norm <- readRDS("data/dat_norm.rds")
 gids_298 <- readRDS("data/gids_298.rds")
@@ -20,7 +21,9 @@ ui <- fluidPage(
             value = "dpy-6, blmp-1",
             width = '50%'),
   plotOutput("distPlot"),
-  uiOutput("error_msg")
+  uiOutput("error_msg"),
+  hr(),
+  includeMarkdown("README.md")
 
 )
 
