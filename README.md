@@ -34,9 +34,9 @@ replicate is kept here.
 For each sample, counts were divided by gene length and rescaled to sum to one
 million (TPM). TMM normalization factors were then computed with edgeR
 (`calcNormFactors()`), and each sample's TPM was divided by its factor.
-WormBase gene IDs were converted to gene names with WormBase release WS298
+WormBase gene IDs are converted to gene names with WormBase release WS298
 (through [wbData](https://github.com/AlexWeinreb/wbData)). The plot shows
-log10(1 + TPM) against developmental time in hours.
+log10(1 + TPM) against developmental time in hours at 25°C.
 
 
 ### Source code

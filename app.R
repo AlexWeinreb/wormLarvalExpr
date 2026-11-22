@@ -82,7 +82,7 @@ server <- function(input, output) {
     max_y <- filter(dat_norm, gene_name %in% genes_sel) |>
       pull(TPM_TMM) |>
       max() |>
-      (\(x) 1.05 * log10(x+1) )()
+      (\(x) 1.1 * log10(x+1) )()
 
 
     dat_norm |>
@@ -94,16 +94,19 @@ server <- function(input, output) {
                  color = gene_name)) +
       theme_classic() +
       theme(legend.position = "none") +
-      scale_fill_manual(values = c("L1" = "#e8dcc8",
-                                   "L2" = "#c8d8e0",
-                                   "L3" = "#d8e0c8",
-                                   "L4" = "#e0d0c8",
-                                   "adult" = "#d4c5a9")) +
+      scale_fill_brewer(palette = "Pastel2") +
+      geom_rect(data = stage_df,
+                aes(xmin = start, xmax = end,
+                    ymin = -Inf, ymax = max_y - .05,
+                    fill = stage),
+                inherit.aes = FALSE,
+                alpha = .4,
+                show.legend = FALSE) +
       geom_rect(data = stage_df,
                 aes(xmin = start,
                     xmax = end,
-                    ymin = max_y - .05,
-                    ymax = max_y + .05,
+                    ymin = max_y - .08,
+                    ymax = max_y + .08,
                     fill = stage),
                 inherit.aes = FALSE,
                 alpha = 1,
