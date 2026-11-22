@@ -115,14 +115,11 @@ server <- function(input, output) {
       xlab("Developmental time (h)") +
       ylab(expression(Expression:~log[10](1 + TPM[TMM]))) +
       ggrepel::geom_text_repel(
-        aes(x = 1.1 * max(stage_df$end),
-            y = log10(1+TPM_TMM),
-            label = gene_name,
-            color = gene_name),
+        aes(label = gene_name),
         data = dat_norm |>
           filter(gene_name %in% genes_sel) |>
           slice_tail(n = 1, by = gene_name),
-        hjust = -1, direction = "y"
+        nudge_x = 1, hjust = 0, direction = "y"
       )
 
   })
