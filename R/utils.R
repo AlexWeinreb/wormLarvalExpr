@@ -11,12 +11,10 @@ i2s <- function (gene_id, geneIDs, warn_missing = TRUE) {
 
 
 
-replace_gene_ids <- function(gene_list, gids){
-
-  is_id <- !(gene_list %in% gids$name) & (gene_list %in% gids$gene_id)
-
-  gene_list[is_id] <- i2s( gene_list[is_id], gids )
-
-  gene_list
-
+replace_gene_ids <- function(x, gids) {
+  key <- tolower(x)
+  idx <- match(key, tolower(gids$name))                     # "hbl-1", "HBL-1"
+  idx[is.na(idx)] <- match(key[is.na(idx)], tolower(gids$sequence))  # "F13D11.2"
+  idx[is.na(idx)] <- match(key[is.na(idx)], tolower(gids$gene_id))   # "WBGene00001851"
+  gids$name[idx]                                            # NA if nothing matched
 }
