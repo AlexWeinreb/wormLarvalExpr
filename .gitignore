@@ -2,5 +2,3 @@
 .Rhistory
 .RData
 .Ruserdata
-data-raw/*.gz
-data/*.rds
