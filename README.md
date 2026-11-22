@@ -6,6 +6,9 @@ This app plots bulk RNA-seq expression of *C. elegans* genes across larval
 development (L1 to adult). Enter one or more genes, separated by commas, as
 gene names (e.g. `mam-2`), sequence names (e.g. `C26B9.7`) or WormBase IDs.
 
+**Note:** many genes show a dip at 40 h. It appears in both replicates
+and probably reflects a technical batch effect rather than biology
+
 ### Data
 
 All expression data come from:
@@ -25,8 +28,8 @@ Larval stage boundaries are approximate.
 Expression values were taken from GEO series
 [GSE130811](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE130811),
 file `GSE130811_expr_mRNA_CE10_coding.tab.gz` (protein-coding genes, ce10
-assembly). Columns with the `.2` suffix were excluded, keeping one sample per
-time point.
+assembly). The last seven time points were sequenced in duplicate; only the first
+replicate is kept here.
 
 For each sample, counts were divided by gene length and rescaled to sum to one
 million (TPM). TMM normalization factors were then computed with edgeR
