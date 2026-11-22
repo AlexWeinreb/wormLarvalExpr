@@ -25,35 +25,40 @@ ui <- fluidPage(
 
 server <- function(input, output) {
 
+  #~ read input ----
+  genes_str <- debounce(reactive(input$genes_str), millis = 500)
+
+  genes <- reactive({
+
+    genes_typed <- str_split_1(genes_str(), ",") |>
+      str_trim() |>
+      setdiff("")
+
+    all_gene_names <-  replace_gene_ids(genes_typed, gids_298)
+
+    is_found <- !is.na(all_gene_names) & (all_gene_names %in% dat_norm$gene_name)
+
+    list(gene_names = all_gene_names[is_found],
+         missing = genes_typed[!is_found],
+         n_found = sum(is_found))
+
+  })
+
+  #~ error_msg ----
+  output$error_msg <- renderUI({
+
+    missing <- genes()$missing
+
+    if (length(missing) == 0) return(NULL)
+
+    prefix <- if (genes()$n_found == 0) "No gene found: " else "Genes not found: "
+    div(class = "alert alert-danger", paste0(prefix, paste(missing, collapse = ", ")))
+  })
+
+  #~ plot ----
   output$distPlot <- renderPlot({
 
-    genes_sel <- str_split_1(input$genes_str,
-                             pattern = ",") |>
-      str_trim() |>
-      setdiff("") |>
-      unique() |>
-      replace_gene_ids(gids_298)
-
-    is_found <- genes_sel %in% dat_norm$gene_name
-
-    if(any(!is_found)){
-
-      if(all(!is_found)){
-        output$error_msg <- renderUI({
-          div(class = "alert alert-danger",
-              glue::glue("No gene found:", paste(genes_sel, collapse = ",")))
-        })
-      } else{
-        output$error_msg <- renderUI({
-          div(class = "alert alert-danger",
-              "Genes not found:", paste(genes_sel[!is_found], collapse = ","))
-        })
-      }
-    }
-
-
-    genes_sel <- genes_sel[is_found]
-
+    genes_sel <- genes()$gene_names
 
     max_y <- filter(dat_norm, gene_name %in% genes_sel) |>
       pull(TPM_TMM) |>
